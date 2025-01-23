@@ -1,0 +1,21 @@
+body:
+  - type: dropdown
+    attributes:
+      name: service
+      label: "Remove Paywall Service:"
+      defaultValue: "https://www.removepaywall.com/"
+      description: "URL/Service used to remove the Paywall from the article."
+      options:
+        - "https://www.removepaywall.com/"
+        - "https://archive.is/"
+  - type: dropdown
+    attributes:
+      name: log_level
+      label: "Log Level:"
+      defaultValue: ERROR
+      options:
+        - DEBUG
+        - INFO
+        - WARNING
+        - ERROR
+        - CRITICAL
