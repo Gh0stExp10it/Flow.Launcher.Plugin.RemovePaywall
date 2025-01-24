@@ -1,0 +1,50 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore: 
+      - .github/workflows/*
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with: 
+          path: 'plugin.json'
+          prop_path: 'Version'
+      - run: echo ${{steps.version.outputs.prop}} 
+      - name: Install libraries and dependencies
+        run: |
+          # Update pip
+          python -m pip install --upgrade pip
+          # Purge pip cache for clean platform change
+          pip cache purge
+          # Install requirements with windows platform dependency
+          pip install -r requirements.txt \
+            --platform win_amd64 \
+            --target ./lib \
+            --only-binary=:all:
+          # Zip localized libraries and dependencies
+          zip -r Flow.Launcher.Plugin.RemovePaywall.zip . -x '*.git*'
+      - name: Publish
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'Flow.Launcher.Plugin.RemovePaywall.zip'
+          tag_name: "v${{steps.version.outputs.prop}}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
