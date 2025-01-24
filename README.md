@@ -1,4 +1,4 @@
-# Flow Launcher Plugin - RemovePaywall <img src="./Images/app.png" alt="drawing" width="40"/>
+# Flow Launcher Plugin - RemovePaywall <img src="./Images/app.png" alt="drawing" width="40" style="vertical-align: bottom; margin-left: 5px;" />
 This Flow Launcher Plugin simplifies accessing content and articles behind paywalls. It utilizes a selection of third-party services to bypass paywalls. Please note that the effectiveness of these services may vary depending on the website and the specific paywall implementation. This plugin has been tested with various news websites in English and German, including *The New York Times* and *heise online*. 
 
 - **Effortless Access**: Simply enter or paste the URL of the paywalled content.
