@@ -22,4 +22,3 @@ This Flow Launcher Plugin simplifies accessing content and articles behind paywa
 |Action keyword|rp|Keyword to activate the plugin.|
 |Remove Paywall Service|https://www.removepaywall.com/|URL/Service used to remove the Paywall from the article - options:<br>- https://www.removepaywall.com/ <br>- https://archive.is/|
 |Log Level|ERROR|The Log Level can be adjusted for error analysis. Normally not of interest for users.|
-auswahlmöglichkeiten
