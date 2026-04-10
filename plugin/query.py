@@ -7,9 +7,10 @@ class Query(Method):
         super().__init__()
         self.plugin = plugin
 
-        self.service = self.plugin.settings.get("service")
-        self.log_level = self.plugin.settings.get("log_level")
-        self.prompt_stop = "||"
+        # Load settings (including fallbacks)
+        settings = self.plugin.settings or {}
+        self.service = settings.get("service", "https://www.removepaywall.com/")
+        self.log_level = settings.get("log_level", "ERROR")
 
         if self.log_level:
             self.plugin._logger.setLevel(self.log_level)
