@@ -1,5 +1,5 @@
 from pyflowlauncher import Plugin, Result, Method, api as API
-from pyflowlauncher.result import ResultResponse
+from pyflowlauncher.models.json_rpc import JsonRPCResponse
 import re
 
 class Query(Method):
@@ -13,18 +13,21 @@ class Query(Method):
         self.log_level = settings.get("log_level", "ERROR")
 
         if self.log_level:
-            self.plugin._logger.setLevel(self.log_level)
+            self.plugin.logger.setLevel(self.log_level)
     
-    def __call__(self, query: str) -> ResultResponse:
+    def __call__(self, query: str) -> JsonRPCResponse:
         try:
+            icon = self.plugin.manifest.ico_path
+            website = self.plugin.manifest.website
+
             if not query:
-                title = f"Insert URL"
-                message = f"e.g. https://example.com"
+                title = "Insert URL"
+                message = "e.g. https://example.com"
             
                 self.add_result(Result(
-                    Title=title,
-                    SubTitle=message,
-                    IcoPath=self.plugin.manifest().get("IcoPath")
+                    title=title,
+                    subtitle=message,
+                    icon=icon
                 ))
             else:
                 if self.service:
@@ -38,39 +41,39 @@ class Query(Method):
                         url_match = re.match(url_pattern, query)
                         
                         if not url_match:
-                            title = f"Please insert a valid URL"
+                            title = "Please insert a valid URL"
                             message = f"{query}"
                 
                             self.add_result(Result(
-                                            Title=title,
-                                            SubTitle=message,
-                                            IcoPath=self.plugin.manifest().get("IcoPath")
+                                title=title,
+                                subtitle=message,
+                                icon=icon
                             ))
 
                     if url_match:
                         remove_paywall_url = self.service + query
-                        title = f"Open URL"
+                        title = "Open URL"
                         message = f"Open URL in default Browser: {remove_paywall_url}"
                         json_rpc_action = API.open_url(remove_paywall_url)
                     
                         self.add_result(Result(
-                                        Title=title,
-                                        SubTitle=message,
-                                        JsonRPCAction=json_rpc_action,
-                                        IcoPath=self.plugin.manifest().get("IcoPath")
+                            title=title,
+                            subtitle=message,
+                            json_rpc_action=json_rpc_action,
+                            icon=icon
                         ))
                 else:
-                    title = f"ERROR"
+                    title = "ERROR"
                     message = f"Error: No Service for the Paywall removal is set <{self.service}>"
-                    json_rpc_action = API.open_url(self.plugin.manifest().get("Website"))
+                    json_rpc_action = API.open_url(website)
                 
                     self.add_result(Result(
-                        Title=title,
-                        SubTitle=message,
-                        JsonRPCAction=json_rpc_action,
-                        IcoPath=self.plugin.manifest().get("IcoPath")
+                        title=title,
+                        subtitle=message,
+                        json_rpc_action=json_rpc_action,
+                        icon=icon
                     ))
         except Exception as e:
-            self._logger.error(e)
+            self.logger.error(f"Error executing query: {e}")
         
         return self.return_results()
