@@ -3,6 +3,9 @@ from pyflowlauncher.models.json_rpc import JsonRPCResponse
 import re
 
 class Query(Method):
+    # Set fixed class attribute
+    __name__ = "query"
+    
     def __init__(self, plugin: Plugin) -> None:
         super().__init__()
         self.plugin = plugin
