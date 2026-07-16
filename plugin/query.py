@@ -1,6 +1,7 @@
+import logging
+import re
 from pyflowlauncher import Plugin, Result, Method, api as API
 from pyflowlauncher.models.json_rpc import JsonRPCResponse
-import re
 
 class Query(Method):
     # Set fixed class attribute
@@ -10,16 +11,21 @@ class Query(Method):
         super().__init__()
         self.plugin = plugin
 
-        # Load settings (including fallbacks)
-        settings = self.plugin.settings or {}
-        self.service = settings.get("service", "https://www.removepaywall.com/")
-        self.log_level = settings.get("log_level", "ERROR")
-
-        if self.log_level:
-            self.plugin.logger.setLevel(self.log_level)
+    # Dynamically route setting lookups to the plugin settings dict    
+    def __getattr__(self, name: str):
+        try:
+            return self.plugin.settings[name]
+        except KeyError:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
     
     def __call__(self, query: str) -> JsonRPCResponse:
         try:
+            # Set and convert Log-Level dynamically
+            if self.log_level:
+                log_level_int = getattr(logging, str(self.log_level).upper(), None)
+                if isinstance(log_level_int, int):
+                    self.plugin.logger.setLevel(log_level_int)
+
             icon = self.plugin.manifest.ico_path
             website = self.plugin.manifest.website
 
@@ -77,6 +83,6 @@ class Query(Method):
                         icon=icon
                     ))
         except Exception as e:
-            self.logger.error(f"Error executing query: {e}")
+            self.plugin.logger.error(f"Error executing query: {e}")
         
         return self.return_results()
