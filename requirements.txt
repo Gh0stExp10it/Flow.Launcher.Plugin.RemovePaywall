@@ -1,1 +1,1 @@
-pyflowlauncher==1.1.1
+pyflowlauncher==1.2.1
